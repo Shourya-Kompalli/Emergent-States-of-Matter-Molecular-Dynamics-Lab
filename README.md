@@ -6,11 +6,11 @@ An interactive molecular dynamics laboratory for exploring how simple pairwise f
 
 **The complete lab** — controls, periodic particle box, energy history, radial distribution function, transport, and data export.
 
-![Full molecular dynamics lab interface](screenshots/application-overview.png)
+![Full molecular dynamics lab interface](screenshots/experiment-series.png)
 
-**Comparing conditions** — a saved run's RDF overlay and density comparison alongside the configured particle box.
+**Values For Different Simulations** the controls are specific values from a set number to set number but what is possible of the values will be done in the simulation.
 
-![Lab interface with a saved experiment series](screenshots/experiment-series.png)
+![Lab interface with a different value for simulations](screenshots/experiment-values.png)
 
 ## Get started
 
