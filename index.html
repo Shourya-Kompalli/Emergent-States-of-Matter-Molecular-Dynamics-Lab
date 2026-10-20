@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101618">
+  <title>Emergent States of Matter | Molecular Dynamics Lab</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Molecular Dynamics Lab home">
+      <span class="brand-mark">M</span>
+      <span>FIELD NOTES <span class="brand-divider">/</span> MOLECULAR DYNAMICS</span>
+    </a>
+    <span class="topbar-note"><span class="live-dot"></span> 2D PARTICLE LAB <span class="topbar-divider">·</span> REDUCED UNITS</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">COMPUTATIONAL PHYSICS <span>—</span> EXPERIMENT 01</p>
+        <h1>Emergent states<br>of <span>matter.</span></h1>
+        <p class="hero-description">A two-dimensional molecular dynamics laboratory. Begin with simple pairwise forces; observe the collective behavior that emerges.</p>
+      </div>
+      <div class="hero-graphic" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit orbit-three"></div>
+        <span class="hero-particle p-one"></span><span class="hero-particle p-two"></span>
+        <span class="hero-particle p-three"></span><span class="hero-particle p-four"></span>
+        <span class="hero-particle p-five"></span><span class="hero-particle p-six"></span>
+        <span class="hero-core"></span>
+        <span class="graphic-label label-top">INTERACTION</span><span class="graphic-label label-bottom">EMERGENCE</span>
+      </div>
+    </section>
+
+    <section class="control-panel panel">
+      <div class="section-heading">
+        <div><p class="eyebrow">01 <span> / </span> EXPERIMENT SETUP</p><h2>Set your conditions</h2></div>
+        <span class="unit-tag">LJ REDUCED UNITS <span>ε = σ = k<sub>B</sub> = 1</span></span>
+      </div>
+      <form id="controls" class="control-grid">
+        <label class="control-field"><span>PARTICLES <small>N</small></span><input name="particleCount" type="number" min="4" max="400" step="1" value="64"><small class="field-hint">4–400 atoms</small></label>
+        <label class="control-field"><span>NUMBER DENSITY <small>ρ</small></span><input name="density" type="number" min="0.05" max="0.95" step="0.01" value="0.45"><small class="field-hint">particles / σ²</small></label>
+        <label class="control-field"><span>TEMPERATURE <small>T</small></span><input name="temperature" type="number" min="0" max="5" step="0.05" value="0.8"><small class="field-hint">target, reduced</small></label>
+        <label class="control-field"><span>WELL DEPTH <small>ε</small></span><input name="epsilon" type="number" min="0.05" max="5" step="0.05" value="1"><small class="field-hint">attraction strength</small></label>
+        <label class="control-field"><span>PARTICLE SIZE <small>σ</small></span><input name="sigma" type="number" min="0.1" max="3" step="0.05" value="1"><small class="field-hint">length scale</small></label>
+        <label class="control-field"><span>FORCE CUTOFF <small>r<sub>c</sub></small></span><input name="cutoff" type="number" min="0.5" max="6" step="0.1" value="2.5"><small class="field-hint">shifted-force LJ</small></label>
+        <label class="control-field"><span>TIME STEP <small>Δt</small></span><input name="timeStep" type="number" min="0.0001" max="0.02" step="0.0001" value="0.004"><small class="field-hint">velocity-Verlet</small></label>
+        <label class="control-field"><span>EQUILIBRATION <small>steps</small></span><input name="equilibrationSteps" type="number" min="0" max="50000" step="100" value="500"><small class="field-hint">velocity rescaling</small></label>
+        <label class="control-field"><span>PRODUCTION <small>steps</small></span><input name="productionSteps" type="number" min="10" max="100000" step="1" value="3000"><small class="field-hint">microcanonical NVE</small></label>
+        <label class="control-field"><span>SEED <small>rng</small></span><input name="seed" type="number" min="0" max="2147483647" step="1" value="42"><small class="field-hint">reproducible run</small></label>
+        <div class="control-actions">
+          <button id="run-button" class="button button-primary" type="submit"><span>▶</span> Run experiment</button>
+          <button id="pause-button" class="button button-secondary" type="button" disabled>Ⅱ Pause</button>
+          <button id="reset-button" class="button button-quiet" type="button">↺ Reset</button>
+        </div>
+      </form>
+      <div id="status" class="status-line" role="status"><span class="status-indicator"></span><span id="status-text">Ready to initialize. Configure conditions and run your first experiment.</span><span id="progress-text"></span></div>
+      <p id="error-message" class="error-message" role="alert" hidden></p>
+    </section>
+
+    <section class="workspace">
+      <div class="visual-column">
+        <article class="panel particle-panel">
+          <div class="section-heading compact"><div><p class="eyebrow">02 <span> / </span> PARTICLE BOX</p><h2>Live configuration</h2></div><span id="phase-tag" class="phase-tag">INITIALIZED</span></div>
+          <div class="canvas-wrap"><canvas id="particle-canvas" aria-label="Animated two-dimensional particle simulation"></canvas><div class="canvas-corner corner-tl"></div><div class="canvas-corner corner-br"></div><span class="canvas-caption">PERIODIC BOUNDARY CONDITIONS</span></div>
+          <div class="particle-legend"><span><i class="legend-particle"></i> PARTICLE</span><span><i class="legend-trail"></i> MOTION TRAIL</span><span id="box-caption"></span></div>
+        </article>
+        <div class="metrics-grid">
+          <div class="metric-card"><span class="metric-label">TEMPERATURE</span><strong id="metric-temp">—</strong><span class="metric-unit">reduced units</span></div>
+          <div class="metric-card"><span class="metric-label">PRESSURE</span><strong id="metric-pressure">—</strong><span class="metric-unit">virial estimate</span></div>
+          <div class="metric-card"><span class="metric-label">KINETIC ENERGY</span><strong id="metric-kinetic">—</strong><span class="metric-unit">ε</span></div>
+          <div class="metric-card"><span class="metric-label">POTENTIAL ENERGY</span><strong id="metric-potential">—</strong><span class="metric-unit">ε</span></div>
+        </div>
+      </div>
+
+      <div class="analysis-column">
+        <article class="panel chart-panel">
+          <div class="section-heading compact"><div><p class="eyebrow">03 <span> / </span> ENERGY</p><h2>Energy over time</h2></div><span class="chart-unit">ε</span></div>
+          <canvas id="energy-chart" class="chart-canvas" aria-label="Kinetic, potential, and total energy versus time"></canvas>
+          <div class="chart-legend"><span><i class="key key-kinetic"></i>Kinetic</span><span><i class="key key-potential"></i>Potential</span><span><i class="key key-total"></i>Total</span></div>
+        </article>
+        <article class="panel chart-panel">
+          <div class="section-heading compact"><div><p class="eyebrow">04 <span> / </span> STRUCTURE</p><h2>Radial distribution, g(r)</h2></div><span class="chart-unit">g(r)</span></div>
+          <canvas id="rdf-chart" class="chart-canvas" aria-label="Radial distribution function"></canvas>
+          <div id="rdf-legend" class="chart-legend"><span><i class="key key-rdf"></i>Current run</span></div>
+        </article>
+        <article class="panel chart-panel">
+          <div class="section-heading compact"><div><p class="eyebrow">05 <span> / </span> TRANSPORT</p><h2>Mean-squared displacement</h2></div><span class="chart-unit">σ²</span></div>
+          <canvas id="msd-chart" class="chart-canvas" aria-label="Mean-squared displacement versus time"></canvas>
+          <div class="diffusion-readout"><span>2D DIFFUSION ESTIMATE</span><strong id="diffusion-value">—</strong><small>D = slope(MSD) / 4</small></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel comparison-panel">
+      <div class="section-heading">
+        <div><p class="eyebrow">06 <span> / </span> EXPERIMENT SERIES</p><h2>Compare conditions</h2></div>
+        <div class="comparison-actions"><span id="run-count" class="run-count">0 saved runs</span><button id="save-run-button" class="button button-secondary" type="button" disabled>＋ Save current run</button></div>
+      </div>
+      <div class="comparison-grid">
+        <div class="comparison-chart"><div class="subchart-heading"><span>PRESSURE vs DENSITY</span><small>each point = one run</small></div><canvas id="density-chart" class="chart-canvas small-chart" aria-label="Pressure versus density for saved runs"></canvas></div>
+        <div class="comparison-chart"><div class="subchart-heading"><span>TEMPERATURE vs DENSITY</span><small>measured mean per run</small></div><canvas id="temperature-chart" class="chart-canvas small-chart" aria-label="Measured temperature versus density for saved runs"></canvas></div>
+      </div>
+      <div id="saved-runs" class="saved-runs"><span class="empty-runs">Save a completed run to begin a comparison series.</span></div>
+    </section>
+
+    <section class="panel data-panel">
+      <div class="section-heading compact"><div><p class="eyebrow">07 <span> / </span> DATA & METHODS</p><h2>Export and reproduce</h2></div><span class="unit-tag">ALL DATA STAYS LOCAL</span></div>
+      <div class="data-content">
+        <p>Every run uses a seeded random-number generator, shifted-force Lennard–Jones interactions, and velocity-Verlet integration. Export measurements or complete trajectories to analyze elsewhere.</p>
+        <div class="export-actions"><button id="export-csv-button" class="button button-secondary" type="button" disabled>↓ Measurements CSV</button><button id="export-json-button" class="button button-secondary" type="button" disabled>↓ Run data JSON</button></div>
+      </div>
+      <p class="science-note"><strong>Model scope.</strong> This two-dimensional, classical Lennard–Jones model is a pedagogical simplification: it omits molecular geometry, electrostatics, and directional hydrogen bonding. It does not reproduce the full water phase diagram or experimental water properties. Pressure and diffusion estimates are finite-size, finite-time approximations; equilibration uses simple velocity rescaling rather than a rigorous thermostat.</p>
+    </section>
+  </main>
+  <footer><span>MOLECULAR DYNAMICS LAB <span class="footer-divider">/</span> A COMPUTATIONAL PHYSICS EXPLORATION</span><a href="/HOW_TO_RUN.md">HOW TO RUN</a></footer>
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>
